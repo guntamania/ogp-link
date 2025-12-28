@@ -6,6 +6,11 @@ import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
 import TextField from '@mui/material/TextField'
+import Container from '@mui/material/Container'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import Stack from '@mui/material/Stack'
 
 interface OGPData {
   id: string
@@ -107,93 +112,104 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <h1>OGP Link Generator</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter URL (e.g., https://example.com)"
-            required
-            className="url-input"
-          />
-        </div>
-        <div className="form-group">
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            placeholder="メモ（任意）"
-            variant="outlined"
-            label="メモ"
-          />
-        </div>
-        <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? '読み込み中...' : 'リンクを追加'}
-        </button>
-      </form>
+    <Container maxWidth="md">
+      <Box sx={{ py: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
+          OGP Link Generator
+        </Typography>
 
-      {error && (
-        <div className="error">
-          <p>Error: {error}</p>
-        </div>
-      )}
-
-      <div className="cards-container">
-        {ogpCards.map((card) => (
-          <Card key={card.id} sx={{ maxWidth: 800, marginBottom: 2 }}>
-            <CardActionArea
-              component="a"
-              href={card.url || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
+        <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
+          <Stack spacing={2}>
+            <TextField
+              fullWidth
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Enter URL (e.g., https://example.com)"
+              required
+              variant="outlined"
+              label="URL"
+            />
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="メモ（任意）"
+              variant="outlined"
+              label="メモ"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              fullWidth
+              disabled={loading}
             >
-              {card.image && (
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={card.image}
-                  alt={card.title || 'OGP Image'}
-                />
+              {loading ? '読み込み中...' : 'リンクを追加'}
+            </Button>
+          </Stack>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Stack spacing={2}>
+          {ogpCards.map((card) => (
+            <Card key={card.id}>
+              <CardActionArea
+                component="a"
+                href={card.url || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {card.image && (
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={card.image}
+                    alt={card.title || 'OGP Image'}
+                  />
+                )}
+                <CardContent>
+                  {card.siteName && (
+                    <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      {card.siteName}
+                    </Typography>
+                  )}
+                  {card.title && (
+                    <Typography gutterBottom variant="h5" component="div">
+                      {card.title}
+                    </Typography>
+                  )}
+                  {card.description && (
+                    <Typography variant="body2" color="text.secondary">
+                      {card.description}
+                    </Typography>
+                  )}
+                  {card.url && (
+                    <Typography variant="caption" color="primary" sx={{ display: 'block', marginTop: 1 }}>
+                      {card.url}
+                    </Typography>
+                  )}
+                </CardContent>
+              </CardActionArea>
+              {card.memo && (
+                <CardContent sx={{ borderTop: '1px solid #e0e0e0', backgroundColor: '#f9f9f9' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                    <strong>メモ:</strong> {card.memo}
+                  </Typography>
+                </CardContent>
               )}
-              <CardContent>
-                {card.siteName && (
-                  <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    {card.siteName}
-                  </Typography>
-                )}
-                {card.title && (
-                  <Typography gutterBottom variant="h5" component="div">
-                    {card.title}
-                  </Typography>
-                )}
-                {card.description && (
-                  <Typography variant="body2" color="text.secondary">
-                    {card.description}
-                  </Typography>
-                )}
-                {card.url && (
-                  <Typography variant="caption" color="primary" sx={{ display: 'block', marginTop: 1 }}>
-                    {card.url}
-                  </Typography>
-                )}
-              </CardContent>
-            </CardActionArea>
-            {card.memo && (
-              <CardContent sx={{ borderTop: '1px solid #e0e0e0', backgroundColor: '#f9f9f9' }}>
-                <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
-                  <strong>メモ:</strong> {card.memo}
-                </Typography>
-              </CardContent>
-            )}
-          </Card>
-        ))}
-      </div>
-    </div>
+            </Card>
+          ))}
+        </Stack>
+      </Box>
+    </Container>
   )
 }
 
