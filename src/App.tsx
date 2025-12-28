@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
+import TextField from '@mui/material/TextField'
 
 interface OGPData {
   id: string
@@ -13,10 +14,12 @@ interface OGPData {
   image?: string
   url?: string
   siteName?: string
+  memo?: string
 }
 
 function App() {
   const [url, setUrl] = useState('')
+  const [memo, setMemo] = useState('')
   const [ogpCards, setOgpCards] = useState<OGPData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -83,12 +86,14 @@ function App() {
         description: getMetaContent('og:description') || getMetaContent('description'),
         image: getMetaContent('og:image'),
         url: getMetaContent('og:url') || targetUrl,
-        siteName: getMetaContent('og:site_name')
+        siteName: getMetaContent('og:site_name'),
+        memo: memo
       }
 
       // 新しいカードを配列に追加
       setOgpCards(prevCards => [...prevCards, ogp])
       setUrl('') // フォームをクリア
+      setMemo('') // メモをクリア
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -113,6 +118,18 @@ function App() {
             placeholder="Enter URL (e.g., https://example.com)"
             required
             className="url-input"
+          />
+        </div>
+        <div className="form-group">
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            placeholder="メモ（任意）"
+            variant="outlined"
+            label="メモ"
           />
         </div>
         <button type="submit" className="submit-button" disabled={loading}>
@@ -166,6 +183,13 @@ function App() {
                 )}
               </CardContent>
             </CardActionArea>
+            {card.memo && (
+              <CardContent sx={{ borderTop: '1px solid #e0e0e0', backgroundColor: '#f9f9f9' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                  <strong>メモ:</strong> {card.memo}
+                </Typography>
+              </CardContent>
+            )}
           </Card>
         ))}
       </div>
