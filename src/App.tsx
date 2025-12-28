@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import './App.css'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import Typography from '@mui/material/Typography'
+import CardActionArea from '@mui/material/CardActionArea'
 
 interface OGPData {
+  id: string
   title?: string
   description?: string
   image?: string
@@ -11,7 +17,7 @@ interface OGPData {
 
 function App() {
   const [url, setUrl] = useState('')
-  const [ogpData, setOgpData] = useState<OGPData | null>(null)
+  const [ogpCards, setOgpCards] = useState<OGPData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -19,7 +25,6 @@ function App() {
     try {
       setLoading(true)
       setError(null)
-      setOgpData(null)
 
       // 複数のCORSプロキシを試す
       const proxyUrls = [
@@ -73,6 +78,7 @@ function App() {
       }
 
       const ogp: OGPData = {
+        id: Date.now().toString(),
         title: getMetaContent('og:title') || doc.querySelector('title')?.textContent || undefined,
         description: getMetaContent('og:description') || getMetaContent('description'),
         image: getMetaContent('og:image'),
@@ -80,7 +86,9 @@ function App() {
         siteName: getMetaContent('og:site_name')
       }
 
-      setOgpData(ogp)
+      // 新しいカードを配列に追加
+      setOgpCards(prevCards => [...prevCards, ogp])
+      setUrl('') // フォームをクリア
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -108,7 +116,7 @@ function App() {
           />
         </div>
         <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? 'Loading...' : 'Generate OGP Link'}
+          {loading ? '読み込み中...' : 'リンクを追加'}
         </button>
       </form>
 
@@ -118,31 +126,49 @@ function App() {
         </div>
       )}
 
-      {ogpData && (
-        <div className="ogp-card">
-          {ogpData.image && (
-            <div className="ogp-image">
-              <img src={ogpData.image} alt={ogpData.title || 'OGP Image'} />
-            </div>
-          )}
-          <div className="ogp-content">
-            {ogpData.siteName && (
-              <p className="ogp-site-name">{ogpData.siteName}</p>
-            )}
-            {ogpData.title && (
-              <h2 className="ogp-title">{ogpData.title}</h2>
-            )}
-            {ogpData.description && (
-              <p className="ogp-description">{ogpData.description}</p>
-            )}
-            {ogpData.url && (
-              <a href={ogpData.url} target="_blank" rel="noopener noreferrer" className="ogp-url">
-                {ogpData.url}
-              </a>
-            )}
-          </div>
-        </div>
-      )}
+      <div className="cards-container">
+        {ogpCards.map((card) => (
+          <Card key={card.id} sx={{ maxWidth: 800, marginBottom: 2 }}>
+            <CardActionArea
+              component="a"
+              href={card.url || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {card.image && (
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={card.image}
+                  alt={card.title || 'OGP Image'}
+                />
+              )}
+              <CardContent>
+                {card.siteName && (
+                  <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    {card.siteName}
+                  </Typography>
+                )}
+                {card.title && (
+                  <Typography gutterBottom variant="h5" component="div">
+                    {card.title}
+                  </Typography>
+                )}
+                {card.description && (
+                  <Typography variant="body2" color="text.secondary">
+                    {card.description}
+                  </Typography>
+                )}
+                {card.url && (
+                  <Typography variant="caption" color="primary" sx={{ display: 'block', marginTop: 1 }}>
+                    {card.url}
+                  </Typography>
+                )}
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }
