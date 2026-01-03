@@ -33,21 +33,6 @@ function Admin() {
   const [ogpCards, setOgpCards] = useState<OGPData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [testData, setTestData] = useState<any[]>([])
-
-  useEffect(() => {
-    fetchTestData()
-  }, [])
-
-  async function fetchTestData() {
-    try {
-      const { data } = await supabase.from("test_data").select()
-      setTestData(data!)
-    } catch (err) {
-      const error = err instanceof Error ? err.message : "Unknown error"
-      setError(error)
-    }
-  }
 
   const fetchOGP = async (targetUrl: string) => {
     try {
@@ -139,12 +124,6 @@ function Admin() {
   return (
     <Container maxWidth="md">
       <Box sx={{ py: 4 }}>
-        <Typography>テストデータ</Typography>
-        <ul>
-          {testData.map((data) => (
-            <li key={data.name}>{data.name}</li>
-          ))}
-        </ul>
 
         <Typography
           variant="h3"
