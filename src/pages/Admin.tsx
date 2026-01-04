@@ -11,6 +11,8 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import { createClient } from "@supabase/supabase-js"
+import type { Database, Tables, TablesInsert } from '../entities/database.types'
+import Sqids from 'sqids'
 
 interface OGPData {
   id: string
@@ -23,7 +25,7 @@ interface OGPData {
 }
 
 function Admin() {
-  const supabase = createClient(
+  const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
   )
@@ -33,6 +35,28 @@ function Admin() {
   const [ogpCards, setOgpCards] = useState<OGPData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [maxRoomId, setMaxRoomId] = useState<number | null>(null)
+
+
+  const fetchMaxRoomId = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('link_rooms')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1)
+        .single<Tables<'link_rooms'>>()
+
+      if (error) throw error
+
+      if (data) {
+        setMaxRoomId(data.id)
+      }
+    } catch (err) {
+      console.error('Error fetching max room ID:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch max room ID')
+    }
+  }
 
   const fetchOGP = async (targetUrl: string) => {
     try {
@@ -121,6 +145,72 @@ function Admin() {
     fetchOGP(url)
   }
 
+  const handlePublish = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // OGPカードが空の場合はエラー
+      if (ogpCards.length === 0) {
+        throw new Error('公開するリンクがありません')
+      }
+
+      // 最大IDを再取得
+      await fetchMaxRoomId()
+
+      if (maxRoomId === null) {
+        throw new Error('ルームIDの取得に失敗しました')
+      }
+
+      // 新しいIDを生成（最大ID + 1）
+      const newRoomIdNumber = maxRoomId + 1
+
+      // Sqidsでハッシュ化
+      const sqids = new Sqids({ minLength: 8 })
+      const roomIdHash = sqids.encode([newRoomIdNumber])
+
+      // link_roomsに挿入するデータ
+      const linkRoomData: TablesInsert<'link_rooms'> = {
+        room_id: roomIdHash,
+        locked: false
+      }
+
+      // link_roomsにデータを挿入
+      const { data: roomData, error: roomError } = await supabase
+        .from('link_rooms')
+        .insert(linkRoomData)
+        .select()
+        .single()
+
+      if (roomError) throw roomError
+
+      // linksに挿入するデータの配列を生成
+      const linksData: TablesInsert<'links'>[] = ogpCards.map(card => ({
+        link_room_id: roomData.id,
+        url: card.url || '',
+        note: card.memo || null
+      }))
+
+      // linksにデータを挿入
+      const { error: linksError } = await supabase
+        .from('links')
+        .insert(linksData)
+
+      if (linksError) throw linksError
+
+      // 成功メッセージ
+      alert(`公開に成功しました！\nルームID: ${roomIdHash}`)
+
+      // カードをクリア
+      setOgpCards([])
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during publishing')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Container maxWidth="md">
       <Box sx={{ py: 4 }}>
@@ -134,6 +224,12 @@ function Admin() {
         >
           OGP Link Generator
         </Typography>
+
+        {maxRoomId !== null && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            最大ルームID: {maxRoomId}
+          </Alert>
+        )}
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
           <Stack spacing={2}>
@@ -173,6 +269,21 @@ function Admin() {
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
+        )}
+
+        {ogpCards.length > 0 && (
+          <Box sx={{ mb: 3, textAlign: 'center' }}>
+            <Button
+              variant="contained"
+              color="success"
+              size="large"
+              onClick={handlePublish}
+              disabled={loading}
+              sx={{ minWidth: 200 }}
+            >
+              公開する ({ogpCards.length}件)
+            </Button>
+          </Box>
         )}
 
         <Stack spacing={2}>
