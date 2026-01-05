@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
@@ -25,6 +26,7 @@ interface OGPData {
 }
 
 function Admin() {
+  const navigate = useNavigate()
   const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
@@ -198,11 +200,11 @@ function Admin() {
 
       if (linksError) throw linksError
 
-      // 成功メッセージ
-      alert(`公開に成功しました！\nルームID: ${roomIdHash}`)
-
       // カードをクリア
       setOgpCards([])
+
+      // ルームページに遷移
+      navigate(`/${roomIdHash}`)
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during publishing')
