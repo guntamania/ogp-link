@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Supabaseの公開キー（ANON_KEY）とURLはクライアントサイドで使用されるため、
+# ビルド出力に含まれることは想定された動作です
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "VITE_ANON_KEY,VITE_SUPABASE_URL"
