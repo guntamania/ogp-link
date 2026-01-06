@@ -40,69 +40,20 @@ function Room() {
 
   const fetchOGP = async (targetUrl: string, linkId: number, note: string | null) => {
     try {
-      // 複数のCORSプロキシを試す
-      const proxyUrls = [
-        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-        `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-        `https://cors-anywhere.herokuapp.com/${targetUrl}`,
-      ]
+      // Supabase Edge FunctionでOGP情報を取得
+      const { data, error } = await supabase.functions.invoke('ogp_fetch', {
+        body: { url: targetUrl },
+      })
 
-      let html = ""
-      let lastError = ""
-
-      // 各プロキシを順番に試す
-      for (const proxyUrl of proxyUrls) {
-        try {
-          const response = await fetch(proxyUrl)
-
-          if (!response.ok) {
-            lastError = `Failed to fetch from ${proxyUrl}`
-            continue
-          }
-
-          // allorigins.winの場合はJSONレスポンス
-          if (proxyUrl.includes("allorigins")) {
-            const data = await response.json()
-            html = data.contents
-          } else {
-            html = await response.text()
-          }
-
-          if (html) {
-            break // 成功したらループを抜ける
-          }
-        } catch (err) {
-          lastError = err instanceof Error ? err.message : "Unknown error"
-          continue
-        }
-      }
-
-      if (!html) {
-        throw new Error(`All proxy attempts failed. Last error: ${lastError}`)
-      }
-
-      // HTMLからOGPタグを抽出
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(html, "text/html")
-
-      const getMetaContent = (property: string): string | undefined => {
-        const meta =
-          doc.querySelector(`meta[property="${property}"]`) ||
-          doc.querySelector(`meta[name="${property}"]`)
-        return meta?.getAttribute("content") || undefined
-      }
+      if (error) throw error
 
       const ogp: OGPData = {
         id: linkId,
-        title:
-          getMetaContent("og:title") ||
-          doc.querySelector("title")?.textContent ||
-          undefined,
-        description:
-          getMetaContent("og:description") || getMetaContent("description"),
-        image: getMetaContent("og:image"),
-        url: getMetaContent("og:url") || targetUrl,
-        siteName: getMetaContent("og:site_name"),
+        title: data?.title || undefined,
+        description: data?.description || undefined,
+        image: data?.image || undefined,
+        url: targetUrl,
+        siteName: data?.siteName || undefined,
         note: note || undefined,
       }
 
