@@ -19,19 +19,25 @@ export type Database = {
           created_at: string
           id: number
           locked: boolean
+          room_description: string | null
           room_id: string
+          room_name: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           locked?: boolean
+          room_description?: string | null
           room_id: string
+          room_name?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           locked?: boolean
+          room_description?: string | null
           room_id?: string
+          room_name?: string | null
         }
         Relationships: []
       }
