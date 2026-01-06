@@ -39,32 +39,10 @@ function Admin() {
   const [ogpCards, setOgpCards] = useState<OGPData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [maxRoomId, setMaxRoomId] = useState<number | null>(null)
   const [roomName, setRoomName] = useState("OGP Link Generator")
   const [roomDescription, setRoomDescription] = useState("URLを入力してOGP情報を取得し、美しいリンクカードを作成できます。複数のリンクをまとめて公開し、共有可能なルームを作成しましょう。")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
-
-
-  const fetchMaxRoomId = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('link_rooms')
-        .select('id')
-        .order('id', { ascending: false })
-        .limit(1)
-        .single<Tables<'link_rooms'>>()
-
-      if (error) throw error
-
-      if (data) {
-        setMaxRoomId(data.id)
-      }
-    } catch (err) {
-      console.error('Error fetching max room ID:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch max room ID')
-    }
-  }
 
   const fetchOGP = async (targetUrl: string) => {
     try {
@@ -114,15 +92,21 @@ function Admin() {
         throw new Error('公開するリンクがありません')
       }
 
-      // 最大IDを再取得
-      await fetchMaxRoomId()
+      // 最大IDを取得（直接値を返すように変更）
+      const { data, error } = await supabase
+        .from('link_rooms')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1)
+        .single<Tables<'link_rooms'>>()
 
-      if (maxRoomId === null) {
-        throw new Error('ルームIDの取得に失敗しました')
+      let currentMaxId = 0
+      if (!error && data) {
+        currentMaxId = data.id
       }
 
       // 新しいIDを生成（最大ID + 1）
-      const newRoomIdNumber = maxRoomId + 1
+      const newRoomIdNumber = currentMaxId + 1
 
       // Sqidsでハッシュ化
       const sqids = new Sqids({ minLength: 8 })
@@ -264,12 +248,6 @@ function Admin() {
             </>
           )}
         </Box>
-
-        {maxRoomId !== null && (
-          <Alert severity="info" sx={{ mb: 3 }}>
-            最大ルームID: {maxRoomId}
-          </Alert>
-        )}
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
           <Stack spacing={2}>
