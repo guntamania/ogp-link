@@ -11,6 +11,8 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
 import { createClient } from "@supabase/supabase-js"
 import type { Database, Tables, TablesInsert } from '../entities/database.types'
 import Sqids from 'sqids'
@@ -38,6 +40,10 @@ function Admin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [maxRoomId, setMaxRoomId] = useState<number | null>(null)
+  const [roomName, setRoomName] = useState("OGP Link Generator")
+  const [roomDescription, setRoomDescription] = useState("URLを入力してOGP情報を取得し、美しいリンクカードを作成できます。複数のリンクをまとめて公開し、共有可能なルームを作成しましょう。")
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [isEditingDescription, setIsEditingDescription] = useState(false)
 
 
   const fetchMaxRoomId = async () => {
@@ -125,7 +131,9 @@ function Admin() {
       // link_roomsに挿入するデータ
       const linkRoomData: TablesInsert<'link_rooms'> = {
         room_id: roomIdHash,
-        locked: false
+        locked: false,
+        room_name: roomName,
+        room_description: roomDescription
       }
 
       // link_roomsにデータを挿入
@@ -168,15 +176,94 @@ function Admin() {
     <Container maxWidth="md">
       <Box sx={{ py: 4 }}>
 
-        <Typography
-          variant="h3"
-          component="h1"
-          gutterBottom
-          align="center"
-          sx={{ mb: 4 }}
-        >
-          OGP Link Generator
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+          {isEditingTitle ? (
+            <TextField
+              fullWidth
+              value={roomName}
+              onChange={(e) => setRoomName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setIsEditingTitle(false)
+                }
+              }}
+              onBlur={() => setIsEditingTitle(false)}
+              autoFocus
+              variant="standard"
+              sx={{
+                '& .MuiInputBase-input': {
+                  fontSize: '2.125rem',
+                  fontWeight: 400,
+                  textAlign: 'center'
+                }
+              }}
+            />
+          ) : (
+            <>
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                align="center"
+                sx={{ mb: 0 }}
+              >
+                {roomName}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => setIsEditingTitle(true)}
+                sx={{ ml: 1 }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </>
+          )}
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4 }}>
+          {isEditingDescription ? (
+            <TextField
+              fullWidth
+              multiline
+              value={roomDescription}
+              onChange={(e) => setRoomDescription(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  setIsEditingDescription(false)
+                }
+              }}
+              onBlur={() => setIsEditingDescription(false)}
+              autoFocus
+              variant="standard"
+              sx={{
+                '& .MuiInputBase-input': {
+                  fontSize: '1rem',
+                  textAlign: 'center',
+                  color: 'text.secondary'
+                }
+              }}
+            />
+          ) : (
+            <>
+              <Typography
+                variant="body1"
+                align="center"
+                color="text.secondary"
+                sx={{ mb: 0 }}
+              >
+                {roomDescription}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => setIsEditingDescription(true)}
+                sx={{ ml: 1 }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </>
+          )}
+        </Box>
 
         {maxRoomId !== null && (
           <Alert severity="info" sx={{ mb: 3 }}>

@@ -29,6 +29,8 @@ function Room() {
   const [ogpData, setOgpData] = useState<OGPData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [roomName, setRoomName] = useState<string>('ルームページ')
+  const [roomDescription, setRoomDescription] = useState<string | null>(null)
 
   const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
@@ -83,11 +85,19 @@ function Room() {
         // room_idでlink_roomsを検索
         const { data: roomData, error: roomError } = await supabase
           .from('link_rooms')
-          .select('id')
+          .select('id, room_name, room_description')
           .eq('room_id', id)
           .single()
 
         if (roomError) throw new Error('ルームが見つかりません')
+
+        // ルーム名と説明をセット
+        if (roomData.room_name) {
+          setRoomName(roomData.room_name)
+        }
+        if (roomData.room_description) {
+          setRoomDescription(roomData.room_description)
+        }
 
         // link_room_idでlinksを検索
         const { data: linksData, error: linksError } = await supabase
@@ -125,10 +135,21 @@ function Room() {
           component="h1"
           gutterBottom
           align="center"
-          sx={{ mb: 4 }}
+          sx={{ mb: 2 }}
         >
-          ルームページ
+          {roomName}
         </Typography>
+
+        {roomDescription && (
+          <Typography
+            variant="body1"
+            align="center"
+            color="text.secondary"
+            sx={{ mb: 4 }}
+          >
+            {roomDescription}
+          </Typography>
+        )}
 
         {!isValidId ? (
           <Alert severity="error">
