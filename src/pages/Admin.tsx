@@ -29,7 +29,7 @@ function Admin() {
   const navigate = useNavigate()
   const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+    import.meta.env.VITE_ANON_KEY // JWT形式のanon keyを使用（Edge FunctionsとDBアクセスの両方で必要）
   )
 
   const [url, setUrl] = useState("")
