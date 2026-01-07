@@ -174,11 +174,13 @@ function Admin() {
               onBlur={() => setIsEditingTitle(false)}
               autoFocus
               variant="standard"
-              sx={{
-                '& .MuiInputBase-input': {
-                  fontSize: '2.125rem',
-                  fontWeight: 400,
-                  textAlign: 'center'
+              slotProps={{
+                input: {
+                  sx: {
+                    fontSize: '2.125rem',
+                    fontWeight: 400,
+                    textAlign: 'center'
+                  }
                 }
               }}
             />
@@ -197,6 +199,7 @@ function Admin() {
                 size="small"
                 onClick={() => setIsEditingTitle(true)}
                 sx={{ ml: 1 }}
+                color="default"
               >
                 <EditIcon fontSize="small" />
               </IconButton>
@@ -220,11 +223,13 @@ function Admin() {
               onBlur={() => setIsEditingDescription(false)}
               autoFocus
               variant="standard"
-              sx={{
-                '& .MuiInputBase-input': {
-                  fontSize: '1rem',
-                  textAlign: 'center',
-                  color: 'text.secondary'
+              slotProps={{
+                input: {
+                  sx: {
+                    fontSize: '1rem',
+                    textAlign: 'center',
+                    color: 'text.secondary'
+                  }
                 }
               }}
             />
@@ -242,6 +247,7 @@ function Admin() {
                 size="small"
                 onClick={() => setIsEditingDescription(true)}
                 sx={{ ml: 1 }}
+                color="default"
               >
                 <EditIcon fontSize="small" />
               </IconButton>
@@ -355,8 +361,9 @@ function Admin() {
               {card.memo && (
                 <CardContent
                   sx={{
-                    borderTop: "1px solid #e0e0e0",
-                    backgroundColor: "#f9f9f9",
+                    borderTop: 1,
+                    borderColor: 'divider',
+                    backgroundColor: 'action.hover',
                   }}
                 >
                   <Typography
