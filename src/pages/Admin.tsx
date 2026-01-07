@@ -1,10 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
-import Typography from '@mui/material/Typography'
-import CardActionArea from '@mui/material/CardActionArea'
 import TextField from '@mui/material/TextField'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -13,17 +8,15 @@ import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import EditIcon from '@mui/icons-material/Edit'
+import Typography from '@mui/material/Typography'
 import { createClient } from "@supabase/supabase-js"
-import type { Database, Tables, TablesInsert } from '../entities/database.types'
+import type { Database, TablesInsert } from '../entities/database.types'
 import Sqids from 'sqids'
+import { OGPCard } from '../components/ogp'
 
-interface OGPData {
+interface LinkData {
   id: string
-  title?: string
-  description?: string
-  image?: string
-  url?: string
-  siteName?: string
+  url: string
   memo?: string
 }
 
@@ -36,7 +29,7 @@ function Admin() {
 
   const [url, setUrl] = useState("")
   const [memo, setMemo] = useState("")
-  const [ogpCards, setOgpCards] = useState<OGPData[]>([])
+  const [links, setLinks] = useState<LinkData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [roomName, setRoomName] = useState("OGP Link Generator")
@@ -44,42 +37,19 @@ function Admin() {
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
 
-  const fetchOGP = async (targetUrl: string) => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Supabase Edge FunctionでOGP情報を取得
-      const { data, error } = await supabase.functions.invoke('ogp_fetch', {
-        body: { url: targetUrl },
-      })
-
-      if (error) throw error
-
-      const ogp: OGPData = {
-        id: Date.now().toString(),
-        title: data?.title || undefined,
-        description: data?.description || undefined,
-        image: data?.image || undefined,
-        url: targetUrl,
-        siteName: data?.siteName || undefined,
-        memo: memo,
-      }
-
-      // 新しいカードを配列に追加
-      setOgpCards((prevCards) => [...prevCards, ogp])
-      setUrl("") // フォームをクリア
-      setMemo("") // メモをクリア
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    fetchOGP(url)
+
+    // 新しいリンクを配列に追加（OGPロードはコンポーネント内で行う）
+    const newLink: LinkData = {
+      id: Date.now().toString(),
+      url: url,
+      memo: memo || undefined,
+    }
+
+    setLinks((prevLinks) => [...prevLinks, newLink])
+    setUrl("") // フォームをクリア
+    setMemo("") // メモをクリア
   }
 
   const handlePublish = async () => {
@@ -87,8 +57,8 @@ function Admin() {
       setLoading(true)
       setError(null)
 
-      // OGPカードが空の場合はエラー
-      if (ogpCards.length === 0) {
+      // リンクが空の場合はエラー
+      if (links.length === 0) {
         throw new Error('公開するリンクがありません')
       }
 
@@ -98,7 +68,7 @@ function Admin() {
         .select('id')
         .order('id', { ascending: false })
         .limit(1)
-        .single<Tables<'link_rooms'>>()
+        .single()
 
       let currentMaxId = 0
       if (!error && data) {
@@ -130,10 +100,10 @@ function Admin() {
       if (roomError) throw roomError
 
       // linksに挿入するデータの配列を生成
-      const linksData: TablesInsert<'links'>[] = ogpCards.map(card => ({
+      const linksData: TablesInsert<'links'>[] = links.map(link => ({
         link_room_id: roomData.id,
-        url: card.url || '',
-        note: card.memo || null
+        url: link.url,
+        note: link.memo || null
       }))
 
       // linksにデータを挿入
@@ -143,8 +113,8 @@ function Admin() {
 
       if (linksError) throw linksError
 
-      // カードをクリア
-      setOgpCards([])
+      // リンクをクリア
+      setLinks([])
 
       // ルームページに遷移
       navigate(`/${roomIdHash}`)
@@ -295,7 +265,7 @@ function Admin() {
           </Alert>
         )}
 
-        {ogpCards.length > 0 && (
+        {links.length > 0 && (
           <Box sx={{ mb: 3, textAlign: 'center' }}>
             <Button
               variant="contained"
@@ -305,77 +275,19 @@ function Admin() {
               disabled={loading}
               sx={{ minWidth: 200 }}
             >
-              公開する ({ogpCards.length}件)
+              公開する ({links.length}件)
             </Button>
           </Box>
         )}
 
         <Stack spacing={2}>
-          {ogpCards.map((card) => (
-            <Card key={card.id}>
-              <CardActionArea
-                component="a"
-                href={card.url || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {card.image && (
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={card.image}
-                    alt={card.title || "OGP Image"}
-                  />
-                )}
-                <CardContent>
-                  {card.siteName && (
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
-                    >
-                      {card.siteName}
-                    </Typography>
-                  )}
-                  {card.title && (
-                    <Typography gutterBottom variant="h5" component="div">
-                      {card.title}
-                    </Typography>
-                  )}
-                  {card.description && (
-                    <Typography variant="body2" color="text.secondary">
-                      {card.description}
-                    </Typography>
-                  )}
-                  {card.url && (
-                    <Typography
-                      variant="caption"
-                      color="primary"
-                      sx={{ display: "block", marginTop: 1 }}
-                    >
-                      {card.url}
-                    </Typography>
-                  )}
-                </CardContent>
-              </CardActionArea>
-              {card.memo && (
-                <CardContent
-                  sx={{
-                    borderTop: 1,
-                    borderColor: 'divider',
-                    backgroundColor: 'action.hover',
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <strong>メモ:</strong> {card.memo}
-                  </Typography>
-                </CardContent>
-              )}
-            </Card>
+          {links.map((link) => (
+            <OGPCard
+              key={link.id}
+              id={link.id}
+              url={link.url}
+              memo={link.memo}
+            />
           ))}
         </Stack>
       </Box>
