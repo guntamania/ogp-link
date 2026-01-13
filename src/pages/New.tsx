@@ -22,7 +22,7 @@ interface LinkData {
   memo?: string
 }
 
-function Admin() {
+function New() {
   const navigate = useNavigate()
   const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
@@ -301,4 +301,4 @@ function Admin() {
   )
 }
 
-export default Admin
+export default New

@@ -216,7 +216,7 @@ function Landing() {
               <Button
                 variant="contained"
                 size="large"
-                onClick={() => navigate('/admin')}
+                onClick={() => navigate('/new')}
                 sx={{ px: 4, py: 1.5, fontSize: '1.1rem' }}
               >
                 リンクを作成
@@ -259,7 +259,7 @@ function Landing() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => navigate('/admin')}
+              onClick={() => navigate('/new')}
               sx={{ px: 4, py: 1.5, fontSize: '1.1rem' }}
             >
               Get Started
