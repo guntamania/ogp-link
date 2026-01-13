@@ -19,7 +19,7 @@ interface OGPCardProps {
 function OGPCard({ url, id, memo, note }: OGPCardProps) {
   const [ogpData, setOgpData] = useState<OGPCardData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [_, setError] = useState(false)
 
   const supabase = createClient<Database>(
     import.meta.env.VITE_SUPABASE_URL,
