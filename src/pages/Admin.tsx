@@ -9,10 +9,12 @@ import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
+import Toolbar from '@mui/material/Toolbar'
 import { createClient } from "@supabase/supabase-js"
 import type { Database, TablesInsert } from '../entities/database.types'
 import Sqids from 'sqids'
 import { OGPCard } from '../components/ogp'
+import { AppToolbar } from '../components/layout'
 
 interface LinkData {
   id: string
@@ -127,10 +129,13 @@ function Admin() {
   }
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
+    <>
+      <AppToolbar />
+      <Toolbar />
+      <Container maxWidth="md">
+        <Box sx={{ py: 4 }}>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
           {isEditingTitle ? (
             <TextField
               fullWidth
@@ -290,8 +295,9 @@ function Admin() {
             />
           ))}
         </Stack>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </>
   )
 }
 

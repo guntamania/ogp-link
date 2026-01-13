@@ -6,9 +6,11 @@ import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import Toolbar from '@mui/material/Toolbar'
 import { createClient } from '@supabase/supabase-js'
 import type { Database, Tables } from '../entities/database.types'
 import { OGPCard } from '../components/ogp'
+import { AppToolbar } from '../components/layout'
 
 function Room() {
   const { id } = useParams<{ id: string }>()
@@ -74,17 +76,20 @@ function Room() {
   }, [id, isValidId])
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
-        <Typography
-          variant="h3"
-          component="h1"
-          gutterBottom
-          align="center"
-          sx={{ mb: 2 }}
-        >
-          {roomName}
-        </Typography>
+    <>
+      <AppToolbar />
+      <Toolbar />
+      <Container maxWidth="md">
+        <Box sx={{ py: 4 }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            gutterBottom
+            align="center"
+            sx={{ mb: 2 }}
+          >
+            {roomName}
+          </Typography>
 
         {roomDescription && (
           <Typography
@@ -133,8 +138,9 @@ function Room() {
             )}
           </Box>
         )}
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </>
   )
 }
 
