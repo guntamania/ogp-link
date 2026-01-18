@@ -255,22 +255,22 @@ function Landing() {
             URLからOGP情報を取得して、美しいリンクカードを作成
           </Typography>
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mb: 8 }}>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mb: 8, flexWrap: 'wrap' }}>
             <Button
               variant="contained"
-              size="large"
-              onClick={() => navigate('/new')}
-              sx={{ px: 4, py: 1.5, fontSize: '1.1rem' }}
-            >
-              Get Started
-            </Button>
-            <Button
-              variant="outlined"
               size="large"
               onClick={handleOpenLoginDialog}
               sx={{ px: 4, py: 1.5, fontSize: '1.1rem' }}
             >
-              Login
+              登録
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={() => navigate('/new')}
+              sx={{ px: 4, py: 1.5, fontSize: '1.1rem' }}
+            >
+              登録せずに始める
             </Button>
           </Box>
 

@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
 import Skeleton from '@mui/material/Skeleton'
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../../entities/database.types'
+import type { Database } from '../../entities/database.types.ts'
 import type { OGPCardData } from './types'
 
 interface OGPCardProps {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import Container from '@mui/material/Container'
@@ -11,7 +11,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
 import Toolbar from '@mui/material/Toolbar'
 import { createClient } from "@supabase/supabase-js"
-import type { Database, TablesInsert } from '../entities/database.types'
+import type { Database, TablesInsert } from '../entities/database.types.ts'
+import type { Session } from '@supabase/supabase-js'
 import Sqids from 'sqids'
 import { OGPCard } from '../components/ogp'
 import { AppToolbar } from '../components/layout'
@@ -38,6 +39,22 @@ function New() {
   const [roomDescription, setRoomDescription] = useState("URLを入力してOGP情報を取得し、美しいリンクカードを作成できます。複数のリンクをまとめて公開し、共有可能なルームを作成しましょう。")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
+  const [session, setSession] = useState<Session | null>(null)
+
+  // 認証状態の取得
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,7 +106,8 @@ function New() {
         room_id: roomIdHash,
         locked: false,
         room_name: roomName,
-        room_description: roomDescription
+        room_description: roomDescription,
+        user_id: session?.user?.id || null
       }
 
       // link_roomsにデータを挿入
