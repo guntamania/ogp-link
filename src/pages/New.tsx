@@ -103,7 +103,7 @@ function New() {
         locked: false,
         room_name: roomName,
         room_description: roomDescription,
-        user_id: session?.user?.id || null
+        UID: session?.user?.id || null
       }
 
       // link_roomsにデータを挿入

@@ -22,7 +22,7 @@ export type Database = {
           room_description: string | null
           room_id: string
           room_name: string | null
-          user_id: string | null
+          UID: string | null
         }
         Insert: {
           created_at?: string
@@ -31,7 +31,7 @@ export type Database = {
           room_description?: string | null
           room_id: string
           room_name?: string | null
-          user_id?: string | null
+          UID?: string | null
         }
         Update: {
           created_at?: string
@@ -40,7 +40,7 @@ export type Database = {
           room_description?: string | null
           room_id?: string
           room_name?: string | null
-          user_id?: string | null
+          UID?: string | null
         }
         Relationships: []
       }
