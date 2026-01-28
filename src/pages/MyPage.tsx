@@ -65,7 +65,7 @@ function MyPage() {
         const { data, error } = await supabase
           .from('link_rooms')
           .select('id, room_id, room_name, room_description, created_at')
-          .eq('user_id', session.user.id)
+          .eq('UID', session.user.id)
           .order('created_at', { ascending: false })
 
         if (error) throw error
