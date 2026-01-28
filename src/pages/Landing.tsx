@@ -17,14 +17,9 @@ import LinkIcon from '@mui/icons-material/Link'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import EditNoteIcon from '@mui/icons-material/EditNote'
 import Toolbar from '@mui/material/Toolbar'
-import { createClient } from '@supabase/supabase-js'
 import type { Session } from '@supabase/supabase-js'
 import { AppToolbar } from '../components/layout'
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_ANON_KEY
-)
+import { supabase } from '../lib/supabase'
 
 function Landing() {
   const navigate = useNavigate()

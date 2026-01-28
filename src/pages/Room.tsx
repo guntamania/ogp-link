@@ -7,10 +7,10 @@ import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import { createClient } from '@supabase/supabase-js'
-import type { Database, Tables } from '../entities/database.types'
+import type { Tables } from '../entities/database.types'
 import { OGPCard } from '../components/ogp'
 import { AppToolbar } from '../components/layout'
+import { supabase } from '../lib/supabase'
 
 function Room() {
   const { id } = useParams<{ id: string }>()
@@ -19,11 +19,6 @@ function Room() {
   const [error, setError] = useState<string | null>(null)
   const [roomName, setRoomName] = useState<string>('ルームページ')
   const [roomDescription, setRoomDescription] = useState<string | null>(null)
-
-  const supabase = createClient<Database>(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_ANON_KEY // JWT形式のanon keyを使用（Edge FunctionsとDBアクセスの両方で必要）
-  )
 
   // IDが8文字以上の英数記号かチェック
   const isValidId = id && id.length >= 8 && /^[a-zA-Z0-9!-/:-@[-`{-~]+$/.test(id)

@@ -10,15 +10,9 @@ import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 import Toolbar from '@mui/material/Toolbar'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../entities/database.types'
 import type { Session } from '@supabase/supabase-js'
 import { AppToolbar } from '../components/layout'
-
-const supabase = createClient<Database>(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_ANON_KEY
-)
+import { supabase } from '../lib/supabase'
 
 interface LinkRoom {
   id: number

@@ -13,15 +13,10 @@ import Divider from '@mui/material/Divider'
 import PersonIcon from '@mui/icons-material/Person'
 import LogoutIcon from '@mui/icons-material/Logout'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import { createClient } from '@supabase/supabase-js'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Session } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_ANON_KEY
-)
+import { supabase } from '../../lib/supabase'
 
 function AppToolbar() {
   const navigate = useNavigate()

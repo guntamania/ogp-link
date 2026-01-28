@@ -10,12 +10,12 @@ import IconButton from '@mui/material/IconButton'
 import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
 import Toolbar from '@mui/material/Toolbar'
-import { createClient } from "@supabase/supabase-js"
-import type { Database, TablesInsert } from '../entities/database.types.ts'
+import type { TablesInsert } from '../entities/database.types.ts'
 import type { Session } from '@supabase/supabase-js'
 import Sqids from 'sqids'
 import { OGPCard } from '../components/ogp'
 import { AppToolbar } from '../components/layout'
+import { supabase } from '../lib/supabase'
 
 interface LinkData {
   id: string
@@ -25,10 +25,6 @@ interface LinkData {
 
 function New() {
   const navigate = useNavigate()
-  const supabase = createClient<Database>(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_ANON_KEY // JWT形式のanon keyを使用（Edge FunctionsとDBアクセスの両方で必要）
-  )
 
   const [url, setUrl] = useState("")
   const [memo, setMemo] = useState("")

@@ -5,9 +5,8 @@ import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
 import Skeleton from '@mui/material/Skeleton'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../../entities/database.types.ts'
 import type { OGPCardData } from './types'
+import { supabase } from '../../lib/supabase'
 
 interface OGPCardProps {
   url: string
@@ -20,11 +19,6 @@ function OGPCard({ url, id, memo, note }: OGPCardProps) {
   const [ogpData, setOgpData] = useState<OGPCardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [_, setError] = useState(false)
-
-  const supabase = createClient<Database>(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_ANON_KEY
-  )
 
   useEffect(() => {
     const fetchOGP = async () => {
