@@ -13,6 +13,7 @@ import Divider from '@mui/material/Divider'
 import PersonIcon from '@mui/icons-material/Person'
 import LogoutIcon from '@mui/icons-material/Logout'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import AddLinkIcon from '@mui/icons-material/AddLink'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Session } from '@supabase/supabase-js'
@@ -57,6 +58,11 @@ function AppToolbar() {
     navigate('/mypage')
   }
 
+  const handleNavigateToNew = () => {
+    setDrawerOpen(false)
+    navigate('/new')
+  }
+
   return (
     <>
       <AppBar position="fixed" color="default" elevation={1}>
@@ -66,9 +72,6 @@ function AppToolbar() {
           </Typography>
           {session && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                {session.user.email}
-              </Typography>
               <IconButton color="primary" onClick={handleDrawerOpen}>
                 <PersonIcon />
               </IconButton>
@@ -89,6 +92,14 @@ function AppToolbar() {
           </Box>
           <Divider />
           <List>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleNavigateToNew}>
+                <ListItemIcon>
+                  <AddLinkIcon />
+                </ListItemIcon>
+                <ListItemText primary="リンクページを追加" />
+              </ListItemButton>
+            </ListItem>
             <ListItem disablePadding>
               <ListItemButton onClick={handleNavigateToMyPage}>
                 <ListItemIcon>

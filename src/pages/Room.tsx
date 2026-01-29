@@ -109,13 +109,6 @@ function Room() {
           <Alert severity="error">{error}</Alert>
         ) : (
           <Box>
-            <Alert severity="success" sx={{ mb: 3 }}>
-              ルームID: {id}
-            </Alert>
-
-            <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-              リンク一覧 ({links.length}件)
-            </Typography>
 
             {links.length === 0 ? (
               <Alert severity="info">このルームにはリンクがありません。</Alert>

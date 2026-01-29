@@ -5,7 +5,8 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import CardActionArea from '@mui/material/CardActionArea'
+import CardActions from '@mui/material/CardActions'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -136,20 +137,37 @@ function MyPage() {
               </Typography>
               <Stack spacing={2}>
                 {rooms.map((room) => (
-                  <Card key={room.id} elevation={2}>
-                    <CardActionArea onClick={() => navigate(`/${room.room_id}`)}>
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                          {room.room_name || 'Untitled Room'}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          {room.room_description || '説明なし'}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          作成日: {new Date(room.created_at).toLocaleDateString('ja-JP')}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
+                  <Card key={room.id} elevation={2} sx={{ borderRadius: 4 }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        {room.room_name || 'Untitled Room'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        {room.room_description || '説明なし'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        作成日: {new Date(room.created_at).toLocaleDateString('ja-JP')}
+                      </Typography>
+                    </CardContent>
+                    <CardActions sx={{ justifyContent: 'flex-end' }}>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        disabled
+                        sx={{ borderRadius: 9999 }}
+                      >
+                        編集する
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        disableElevation
+                        onClick={() => navigate(`/${room.room_id}`)}
+                        sx={{ borderRadius: 9999 }}
+                      >
+                        見る
+                      </Button>
+                    </CardActions>
                   </Card>
                 ))}
               </Stack>

@@ -67,6 +67,10 @@ function New() {
     setNote("") // メモをクリア
   }
 
+  const handleDelete = (id: string | number) => {
+    setLinks((prevLinks) => prevLinks.filter((link) => link.id !== id))
+  }
+
   const handlePublish = async () => {
     try {
       setLoading(true)
@@ -306,6 +310,7 @@ function New() {
               id={link.id}
               url={link.url}
               note={link.note}
+              onDelete={handleDelete}
             />
           ))}
         </Stack>

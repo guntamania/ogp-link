@@ -4,6 +4,8 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
 import type { OGPCardData } from './types'
 import { supabase } from '../../lib/supabase'
 
@@ -11,14 +13,22 @@ interface OGPCardProps {
   url: string
   id: string | number
   note?: string
+  onDelete?: (id: string | number) => void
 }
 
 const CARD_HEIGHT = 300
 
-function OGPCard({ url, id, note }: OGPCardProps) {
+function OGPCard({ url, id, note, onDelete }: OGPCardProps) {
   const [ogpData, setOgpData] = useState<OGPCardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [_, setError] = useState(false)
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (onDelete) {
+      onDelete(id)
+    }
+  }
 
   useEffect(() => {
     const fetchOGP = async () => {
@@ -74,15 +84,36 @@ function OGPCard({ url, id, note }: OGPCardProps) {
 
 
   return (
-    <Card elevation={4} sx={{ borderRadius: 2 }}>
-      <CardActionArea
-        component="a"
-        href={ogpData.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        sx={{ position: 'relative', height: CARD_HEIGHT }}
-      >
-        {/* 背景画像 */}
+    <Card elevation={4} sx={{ borderRadius: 4, position: 'relative' }}>
+        {/* 削除ボタン */}
+        {onDelete && (
+          <IconButton
+            onClick={handleDeleteClick}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              zIndex: 10,
+              backgroundColor: 'error.main',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'error.dark',
+              },
+            }}
+            size="small"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        )}
+
+        <CardActionArea
+          component="a"
+          href={ogpData.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ position: 'relative', height: CARD_HEIGHT }}
+        >
+          {/* 背景画像 */}
         <Box
           sx={{
             position: 'absolute',
