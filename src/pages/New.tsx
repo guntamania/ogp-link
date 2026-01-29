@@ -305,7 +305,7 @@ function New() {
               key={link.id}
               id={link.id}
               url={link.url}
-              memo={link.memo}
+              note={link.memo}
             />
           ))}
         </Stack>

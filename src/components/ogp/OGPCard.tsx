@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
-import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import type { OGPCardData } from './types'
 import { supabase } from '../../lib/supabase'
@@ -11,11 +10,12 @@ import { supabase } from '../../lib/supabase'
 interface OGPCardProps {
   url: string
   id: string | number
-  memo?: string
   note?: string
 }
 
-function OGPCard({ url, id, memo, note }: OGPCardProps) {
+const CARD_HEIGHT = 300
+
+function OGPCard({ url, id, note }: OGPCardProps) {
   const [ogpData, setOgpData] = useState<OGPCardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [_, setError] = useState(false)
@@ -40,7 +40,6 @@ function OGPCard({ url, id, memo, note }: OGPCardProps) {
           description: data?.description || undefined,
           image: data?.image || undefined,
           siteName: data?.siteName || undefined,
-          memo: memo || undefined,
           note: note || undefined,
         }
 
@@ -52,7 +51,6 @@ function OGPCard({ url, id, memo, note }: OGPCardProps) {
         setOgpData({
           id,
           url,
-          memo: memo || undefined,
           note: note || undefined,
         })
       } finally {
@@ -61,90 +59,118 @@ function OGPCard({ url, id, memo, note }: OGPCardProps) {
     }
 
     fetchOGP()
-  }, [url, id, memo, note])
+  }, [url, id, note])
 
   // ローディング中のスケルトンUI
   if (loading) {
     return (
-      <Card>
-        <Skeleton variant="rectangular" height={300} />
-        <CardContent>
-          <Skeleton variant="text" width="30%" height={20} sx={{ mb: 1 }} />
-          <Skeleton variant="text" width="80%" height={32} sx={{ mb: 1 }} />
-          <Skeleton variant="text" width="100%" height={20} />
-          <Skeleton variant="text" width="100%" height={20} />
-          <Skeleton variant="text" width="60%" height={16} sx={{ mt: 1 }} />
-        </CardContent>
+      <Card elevation={4}>
+        <Skeleton variant="rectangular" height={CARD_HEIGHT} />
       </Card>
     )
   }
 
   if (!ogpData) return null
 
-  const displayMemo = memo || note
 
   return (
-    <Card>
+    <Card elevation={4} sx={{ borderRadius: 2 }}>
       <CardActionArea
         component="a"
         href={ogpData.url}
         target="_blank"
         rel="noopener noreferrer"
+        sx={{ position: 'relative', height: CARD_HEIGHT }}
       >
-        {ogpData.image && (
-          <CardMedia
-            component="img"
-            height="300"
-            image={ogpData.image}
-            alt={ogpData.title || "OGP Image"}
-          />
-        )}
-        <CardContent>
+        {/* 背景画像 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: ogpData.image ? `url(${ogpData.image})` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundColor: ogpData.image ? 'transparent' : 'grey.800',
+          }}
+        />
+
+        {/* 下半分の黒グラデーションオーバーレイ */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.8) 100%)',
+          }}
+        />
+
+        {/* コンテンツ */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 0.5,
+          }}
+        >
+          {/* メモ */}
+          {note && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.85)',
+                whiteSpace: 'pre-wrap',
+                mb: 0.5,
+              }}
+            >
+              📝 {note}
+            </Typography>
+          )}
+
+          {/* タイトル */}
+          {ogpData.title && (
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                color: 'white',
+                fontWeight: 'bold',
+                textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
+              {ogpData.title}
+            </Typography>
+          )}
+
+          {/* サイト名 */}
           {ogpData.siteName && (
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}
             >
               {ogpData.siteName}
             </Typography>
           )}
-          {ogpData.title && (
-            <Typography gutterBottom variant="h5" component="div">
-              {ogpData.title}
-            </Typography>
-          )}
-          {ogpData.description && (
-            <Typography variant="body2" color="text.secondary">
-              {ogpData.description}
-            </Typography>
-          )}
-          <Typography
-            variant="caption"
-            color="primary"
-            sx={{ display: "block", marginTop: 1 }}
-          >
-            {ogpData.url}
-          </Typography>
-        </CardContent>
+        </Box>
       </CardActionArea>
-      {displayMemo && (
-        <CardContent
-          sx={{
-            borderTop: 1,
-            borderColor: 'divider',
-            backgroundColor: 'action.hover',
-          }}
-        >
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ whiteSpace: "pre-wrap" }}
-          >
-            <strong>メモ:</strong> {displayMemo}
-          </Typography>
-        </CardContent>
-      )}
     </Card>
   )
 }
