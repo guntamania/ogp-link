@@ -20,14 +20,14 @@ import { supabase } from '../lib/supabase'
 interface LinkData {
   id: string
   url: string
-  memo?: string
+  note?: string
 }
 
 function New() {
   const navigate = useNavigate()
 
   const [url, setUrl] = useState("")
-  const [memo, setMemo] = useState("")
+  const [note, setNote] = useState("")
   const [links, setLinks] = useState<LinkData[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -59,12 +59,12 @@ function New() {
     const newLink: LinkData = {
       id: Date.now().toString(),
       url: url,
-      memo: memo || undefined,
+      note: note || undefined,
     }
 
     setLinks((prevLinks) => [...prevLinks, newLink])
     setUrl("") // フォームをクリア
-    setMemo("") // メモをクリア
+    setNote("") // メモをクリア
   }
 
   const handlePublish = async () => {
@@ -119,7 +119,7 @@ function New() {
       const linksData: TablesInsert<'links'>[] = links.map(link => ({
         link_room_id: roomData.id,
         url: link.url,
-        note: link.memo || null
+        note: link.note || null
       }))
 
       // linksにデータを挿入
@@ -260,8 +260,8 @@ function New() {
               fullWidth
               multiline
               rows={4}
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
               placeholder="メモ（任意）"
               variant="outlined"
               label="メモ"
@@ -305,7 +305,7 @@ function New() {
               key={link.id}
               id={link.id}
               url={link.url}
-              note={link.memo}
+              note={link.note}
             />
           ))}
         </Stack>
