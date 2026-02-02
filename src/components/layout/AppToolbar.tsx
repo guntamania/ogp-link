@@ -65,14 +65,29 @@ function AppToolbar() {
 
   return (
     <>
-      <AppBar position="fixed" color="default" elevation={1}>
+      <AppBar position="fixed" elevation={0} sx={{ backgroundColor: 'transparent' }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            OGP Link Generator
-          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
+            <IconButton
+              onClick={() => navigate('/')}
+              sx={{
+                backgroundColor: 'grey.100',
+                '&:hover': { backgroundColor: 'grey.200' },
+              }}
+            >
+              <img src="/vite.svg" alt="Logo" style={{ width: 24, height: 24 }} />
+            </IconButton>
+          </Box>
           {session && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <IconButton color="primary" onClick={handleDrawerOpen}>
+              <IconButton
+                onClick={handleDrawerOpen}
+                sx={{
+                  backgroundColor: 'grey.100',
+                  color: 'grey.800',
+                  '&:hover': { backgroundColor: 'grey.200' },
+                }}
+              >
                 <PersonIcon />
               </IconButton>
             </Box>
