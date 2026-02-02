@@ -14,15 +14,20 @@ import PersonIcon from '@mui/icons-material/Person'
 import LogoutIcon from '@mui/icons-material/Logout'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import AddLinkIcon from '@mui/icons-material/AddLink'
+import ShareIcon from '@mui/icons-material/Share'
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase'
 
 function AppToolbar() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [session, setSession] = useState<Session | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // Roomページかどうかを判定（/:id 形式で8文字以上の英数記号）
+  const isRoomPage = /^\/[a-zA-Z0-9!-/:-@[-`{-~]{8,}$/.test(location.pathname)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -63,6 +68,15 @@ function AppToolbar() {
     navigate('/new')
   }
 
+  const handleShare = async () => {
+    const url = window.location.href
+    if (navigator.share) {
+      await navigator.share({ url })
+    } else {
+      await navigator.clipboard.writeText(url)
+    }
+  }
+
   return (
     <>
       <AppBar position="fixed" elevation={0} sx={{ backgroundColor: 'transparent' }}>
@@ -78,8 +92,20 @@ function AppToolbar() {
               <img src="/vite.svg" alt="Logo" style={{ width: 24, height: 24 }} />
             </IconButton>
           </Box>
-          {session && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {isRoomPage && (
+              <IconButton
+                onClick={handleShare}
+                sx={{
+                  backgroundColor: 'grey.100',
+                  color: 'grey.800',
+                  '&:hover': { backgroundColor: 'grey.200' },
+                }}
+              >
+                <ShareIcon />
+              </IconButton>
+            )}
+            {session && (
               <IconButton
                 onClick={handleDrawerOpen}
                 sx={{
@@ -90,8 +116,8 @@ function AppToolbar() {
               >
                 <PersonIcon />
               </IconButton>
-            </Box>
-          )}
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
