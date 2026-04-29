@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import type { OGPCardData } from './types'
@@ -16,193 +14,184 @@ interface OGPCardProps {
   onDelete?: (id: string | number) => void
 }
 
-const CARD_HEIGHT = 300
+const CARD_HEIGHT = 280
 
 function OGPCard({ url, id, note, onDelete }: OGPCardProps) {
   const [ogpData, setOgpData] = useState<OGPCardData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [_, setError] = useState(false)
+  const [hovered, setHovered] = useState(false)
+
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (onDelete) {
-      onDelete(id)
-    }
+    onDelete?.(id)
   }
 
   useEffect(() => {
     const fetchOGP = async () => {
       try {
         setLoading(true)
-        setError(false)
-
-        // Supabase Edge FunctionでOGP情報を取得
         const { data, error: fetchError } = await supabase.functions.invoke('ogp_fetch', {
           body: { url },
         })
-
         if (fetchError) throw fetchError
-
-        const ogp: OGPCardData = {
-          id,
-          url,
+        setOgpData({
+          id, url,
           title: data?.title || undefined,
           description: data?.description || undefined,
           image: data?.image || undefined,
           siteName: data?.siteName || undefined,
           note: note || undefined,
-        }
-
-        setOgpData(ogp)
-      } catch (err) {
-        console.error(`Failed to fetch OGP for ${url}:`, err)
-        setError(true)
-        // OGPの取得に失敗してもURLとメモは表示する
-        setOgpData({
-          id,
-          url,
-          note: note || undefined,
         })
+      } catch {
+        setOgpData({ id, url, note: note || undefined })
       } finally {
         setLoading(false)
       }
     }
-
     fetchOGP()
   }, [url, id, note])
 
-  // ローディング中のスケルトンUI
   if (loading) {
     return (
-      <Card elevation={4}>
-        <Skeleton variant="rectangular" height={CARD_HEIGHT} />
-      </Card>
+      <Skeleton
+        variant="rectangular"
+        height={CARD_HEIGHT}
+        animation="wave"
+        sx={{
+          borderRadius: '20px',
+          background: 'linear-gradient(90deg,#1e1e30 25%,#252540 50%,#1e1e30 75%)',
+          backgroundSize: '200% 100%',
+          animation: 'shimmer 1.5s infinite',
+        }}
+      />
     )
   }
 
   if (!ogpData) return null
 
-
   return (
-    <Card elevation={4} sx={{ borderRadius: 4, position: 'relative' }}>
-        {/* 削除ボタン */}
-        {onDelete && (
-          <IconButton
-            onClick={handleDeleteClick}
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              zIndex: 10,
-              backgroundColor: 'error.main',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'error.dark',
-              },
-            }}
-            size="small"
+    <Box
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      sx={{
+        height: CARD_HEIGHT,
+        borderRadius: '20px',
+        overflow: 'hidden',
+        position: 'relative',
+        cursor: 'pointer',
+        boxShadow: hovered
+          ? '0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(124,131,255,0.18)'
+          : '0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)',
+        transition: 'box-shadow 0.3s ease, transform 0.2s ease',
+        transform: hovered ? 'translateY(-2px)' : 'none',
+      }}
+    >
+      {/* 背景 */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: ogpData.image ? `url(${ogpData.image})` : 'none',
+          background: ogpData.image ? undefined : 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+
+      {/* グラデーションオーバーレイ */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(10,10,22,0.10) 0%, rgba(10,10,22,0.88) 100%)',
+        }}
+      />
+
+      {/* 削除ボタン */}
+      {onDelete && (
+        <IconButton
+          onClick={handleDeleteClick}
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            zIndex: 10,
+            width: 30,
+            height: 30,
+            background: 'rgba(255,107,107,0.20)',
+            border: '1px solid rgba(255,107,107,0.35)',
+            backdropFilter: 'blur(8px)',
+            color: '#ff6b6b',
+            '&:hover': {
+              background: 'rgba(255,107,107,0.35)',
+              borderColor: '#ff6b6b',
+            },
+          }}
+        >
+          <DeleteIcon sx={{ fontSize: 14 }} />
+        </IconButton>
+      )}
+
+      {/* コンテンツ */}
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          p: 2.25,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.75,
+        }}
+      >
+        {note && (
+          <Typography
+            variant="body2"
+            sx={{ color: 'rgba(255,255,255,0.70)', display: 'flex', alignItems: 'center', gap: 0.5 }}
           >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+            📝 {note}
+          </Typography>
         )}
+        {ogpData.title && (
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              color: '#fff',
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              fontSize: '1.05rem',
+            }}
+          >
+            {ogpData.title}
+          </Typography>
+        )}
+        {ogpData.siteName && (
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'rgba(255,255,255,0.48)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            {ogpData.siteName}
+          </Typography>
+        )}
+      </Box>
 
-        <CardActionArea
-          component="a"
-          href={ogpData.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ position: 'relative', height: CARD_HEIGHT }}
-        >
-          {/* 背景画像 */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: ogpData.image ? `url(${ogpData.image})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundColor: ogpData.image ? 'transparent' : 'grey.800',
-          }}
-        />
-
-        {/* 下半分の黒グラデーションオーバーレイ */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.8) 100%)',
-          }}
-        />
-
-        {/* コンテンツ */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 0.5,
-          }}
-        >
-          {/* メモ */}
-          {note && (
-            <Typography
-              variant="body2"
-              sx={{
-                color: 'rgba(255, 255, 255, 0.85)',
-                whiteSpace: 'pre-wrap',
-                mb: 0.5,
-              }}
-            >
-              📝 {note}
-            </Typography>
-          )}
-
-          {/* タイトル */}
-          {ogpData.title && (
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                color: 'white',
-                fontWeight: 'bold',
-                textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-              }}
-            >
-              {ogpData.title}
-            </Typography>
-          )}
-
-          {/* サイト名 */}
-          {ogpData.siteName && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'rgba(255, 255, 255, 0.7)',
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}
-            >
-              {ogpData.siteName}
-            </Typography>
-          )}
-        </Box>
-      </CardActionArea>
-    </Card>
+      {/* クリッカブルオーバーレイ */}
+      <a href={ogpData.url} target="_blank" rel="noopener noreferrer"
+        style={{ position: 'absolute', inset: 0 }} />
+    </Box>
   )
 }
 

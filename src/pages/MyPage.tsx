@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
@@ -30,47 +27,29 @@ function MyPage() {
   const [rooms, setRooms] = useState<LinkRoom[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  // 認証状態の確認
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        // ログインしていない場合はルートにリダイレクト
-        navigate('/')
-        return
-      }
+      if (!session) { navigate('/'); return }
       setSession(session)
     })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate('/')
-        return
-      }
-      setSession(session)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
+      if (!s) { navigate('/'); return }
+      setSession(s)
     })
-
     return () => subscription.unsubscribe()
   }, [navigate])
 
-  // ユーザーのルーム一覧を取得
   useEffect(() => {
     if (!session?.user?.id) return
-
     const fetchRooms = async () => {
       try {
         setLoading(true)
-        setError(null)
-
         const { data, error } = await supabase
           .from('link_rooms')
           .select('id, room_id, room_name, room_description, created_at')
           .eq('UID', session.user.id)
           .order('created_at', { ascending: false })
-
         if (error) throw error
-
         setRooms(data || [])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'ルームの取得に失敗しました')
@@ -78,7 +57,6 @@ function MyPage() {
         setLoading(false)
       }
     }
-
     fetchRooms()
   }, [session])
 
@@ -88,9 +66,9 @@ function MyPage() {
         <AppToolbar />
         <Toolbar />
         <Container maxWidth="lg">
-          <Box sx={{ py: 8, textAlign: 'center' }}>
-            <CircularProgress sx={{ mb: 2 }} />
-            <Typography variant="h5">読み込み中...</Typography>
+          <Box sx={{ py: 12, textAlign: 'center' }}>
+            <CircularProgress sx={{ mb: 2, color: 'primary.main' }} />
+            <Typography variant="h5" color="text.secondary">読み込み中...</Typography>
           </Box>
         </Container>
       </>
@@ -101,74 +79,76 @@ function MyPage() {
     <>
       <AppToolbar />
       <Toolbar />
-      <Container maxWidth="lg">
+      <Container maxWidth="md">
         <Box sx={{ py: 4 }}>
-          <Typography
-            variant="h3"
-            component="h1"
-            gutterBottom
-            sx={{ mb: 1 }}
-          >
+          <Typography variant="h3" fontWeight={700} gutterBottom sx={{ mb: 0.5 }}>
             マイページ
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
             {session?.user?.email}
           </Typography>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-          )}
+          {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
           {rooms.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 8 }}>
-              <Typography variant="h5" color="text.secondary" gutterBottom>
+            <Box sx={{
+              py: 10, textAlign: 'center', borderRadius: '20px',
+              background: 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
                 まだルームがありません
               </Typography>
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body2" color="text.disabled" sx={{ mb: 3 }}>
                 新しいリンクを作成してルームを始めましょう
               </Typography>
+              <Button variant="contained" onClick={() => navigate('/new')}>
+                リンクページを作成
+              </Button>
             </Box>
           ) : (
             <>
-              <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                作成したルーム ({rooms.length}件)
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                作成したルーム {rooms.length}件
               </Typography>
               <Stack spacing={2}>
                 {rooms.map((room) => (
-                  <Card key={room.id} elevation={2} sx={{ borderRadius: 4 }}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {room.room_name || 'Untitled Room'}
+                  <Box
+                    key={room.id}
+                    sx={{
+                      p: 2.5, borderRadius: '20px',
+                      background: 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        borderColor: 'rgba(124,131,255,0.28)',
+                        boxShadow: '0 6px 24px rgba(0,0,0,0.5), 0 0 12px rgba(124,131,255,0.10)',
+                      },
+                    }}
+                  >
+                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                      {room.room_name || 'Untitled Room'}
+                    </Typography>
+                    {room.room_description && (
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                        {room.room_description}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        {room.room_description || '説明なし'}
+                    )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="caption" color="text.disabled">
+                        {new Date(room.created_at).toLocaleDateString('ja-JP')}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        作成日: {new Date(room.created_at).toLocaleDateString('ja-JP')}
-                      </Typography>
-                    </CardContent>
-                    <CardActions sx={{ justifyContent: 'flex-end' }}>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        disabled
-                        sx={{ borderRadius: 9999 }}
-                      >
-                        編集する
-                      </Button>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        disableElevation
-                        onClick={() => navigate(`/${room.room_id}`)}
-                        sx={{ borderRadius: 9999 }}
-                      >
-                        見る
-                      </Button>
-                    </CardActions>
-                  </Card>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button variant="outlined" size="small" disabled sx={{ borderRadius: 9999 }}>
+                          編集する
+                        </Button>
+                        <Button variant="contained" size="small" onClick={() => navigate(`/${room.room_id}`)} sx={{ borderRadius: 9999 }}>
+                          見る
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Box>
                 ))}
               </Stack>
             </>
