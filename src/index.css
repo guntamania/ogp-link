@@ -2,16 +2,17 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: dark;
+  color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --color-brand: #7c83ff;
-  --color-brand-dim: #646cff;
-  --color-brand-glow: rgba(124, 131, 255, 0.20);
-  --grad-brand: linear-gradient(135deg, #646cff 0%, #a855f7 100%);
-  --color-bg: #0f0f18;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-brand: #f5a623;
+  --color-brand-hover: #e8940f;
+  --color-brand-glow: rgba(245,166,35,0.20);
+  --grad-brand: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+  --grad-sky: linear-gradient(135deg, #4f8ef7 0%, #9b8cff 100%);
+  --color-bg: #fffdf7;
+  --color-border: rgba(0,0,0,0.08);
 }
 
 *, *::before, *::after {

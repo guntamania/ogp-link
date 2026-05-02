@@ -19,35 +19,42 @@ import type { Session } from '@supabase/supabase-js'
 import { AppToolbar } from '../components/layout'
 import { supabase } from '../lib/supabase'
 
-function FeatureCard({ icon, step, title, description }: { icon: React.ReactNode; step: string; title: string; description: string }) {
+const FEATURE_COLORS = [
+  { bg: '#eef3ff', border: 'rgba(79,142,247,0.25)', icon: '#4f8ef7' },
+  { bg: '#fff8ec', border: 'rgba(245,166,35,0.25)', icon: '#f5a623' },
+  { bg: '#fff0f0', border: 'rgba(255,107,107,0.25)', icon: '#ff6b6b' },
+]
+
+function FeatureCard({ icon, step, title, description, colorIndex = 0 }: { icon: React.ReactNode; step: string; title: string; description: string; colorIndex?: number }) {
+  const c = FEATURE_COLORS[colorIndex % FEATURE_COLORS.length]
   return (
     <Box sx={{
       p: 3,
       borderRadius: '20px',
-      background: 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
-      border: '1px solid rgba(255,255,255,0.08)',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+      background: '#ffffff',
+      border: '1px solid rgba(0,0,0,0.08)',
+      boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
       flex: '1 1 280px',
       maxWidth: 380,
       transition: 'box-shadow 0.3s, border-color 0.3s',
       '&:hover': {
-        borderColor: 'rgba(124,131,255,0.30)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 16px rgba(124,131,255,0.12)',
+        borderColor: 'rgba(0,0,0,0.14)',
+        boxShadow: '0 8px 28px rgba(0,0,0,0.10)',
       },
     }}>
       <Box sx={{
-        width: 48, height: 48, borderRadius: '14px', mb: 2,
-        background: 'rgba(124,131,255,0.12)',
-        border: '1px solid rgba(124,131,255,0.25)',
+        width: 48, height: 48, borderRadius: '12px', mb: 2,
+        background: c.bg,
+        border: `1px solid ${c.border}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'primary.main',
+        color: c.icon,
       }}>
         {icon}
       </Box>
-      <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase' }}>
+      <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase' }}>
         {step}
       </Typography>
-      <Typography variant="h6" sx={{ mt: 0.5, mb: 1, fontWeight: 600 }}>
+      <Typography variant="h6" sx={{ mt: 0.5, mb: 1, fontWeight: 700, color: 'text.primary' }}>
         {title}
       </Typography>
       <Typography variant="body2" color="text.secondary">
@@ -172,10 +179,7 @@ function Landing() {
             <Alert severity="success" sx={{ mb: 4, maxWidth: 480, mx: 'auto' }}>
               ログイン中: {session.user.email}
             </Alert>
-            <Typography variant="h3" fontWeight={700} gutterBottom sx={{
-              background: 'linear-gradient(135deg,#646cff 0%,#a855f7 100%)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>
+            <Typography variant="h3" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
               ようこそ！
             </Typography>
             <Typography color="text.secondary" sx={{ mb: 5 }}>
@@ -202,11 +206,7 @@ function Landing() {
       <Container maxWidth="md">
         <Box sx={{ py: { xs: 8, md: 12 }, textAlign: 'center' }}>
           {/* Hero */}
-          <Typography variant="h2" fontWeight={700} gutterBottom sx={{
-            background: 'linear-gradient(135deg,#7c83ff 0%,#a855f7 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            mb: 2,
-          }}>
+          <Typography variant="h2" fontWeight={700} gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
             OGP Link
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 5, maxWidth: 480, mx: 'auto', lineHeight: 1.6 }}>
@@ -232,18 +232,21 @@ function Landing() {
               step="Step 1"
               title="URLを入力"
               description="共有したいWebページのURLを貼り付けます。"
+              colorIndex={0}
             />
             <FeatureCard
               icon={<EditNoteIcon />}
               step="Step 2"
               title="メモを追加"
               description="必要に応じてリンクに関するメモを追加できます。"
+              colorIndex={1}
             />
             <FeatureCard
               icon={<BookmarkIcon />}
               step="Step 3"
               title="カードを生成"
               description="OGP情報を自動取得して美しいカードを生成します。"
+              colorIndex={2}
             />
           </Box>
         </Box>

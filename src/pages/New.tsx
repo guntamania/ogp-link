@@ -151,8 +151,9 @@ function New() {
             onSubmit={handleSubmit}
             sx={{
               mb: 4, p: 3, borderRadius: '20px',
-              background: 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#ffffff',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
             }}
           >
             <Stack spacing={2}>

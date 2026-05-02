@@ -9,7 +9,9 @@
       "Skill(update-config)",
       "Skill(update-config:*)",
       "Bash(gunzip -c /Users/hyamada/.claude/projects/-Users-hyamada-dev-ogp-link-ogp-link/caf39379-b999-4e57-a9c0-f750aa53e20e/tool-results/webfetch-1777325761557-euny3t.bin)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Read(//private/tmp/**)",
+      "Bash(mkdir -p ogp-design)"
     ]
   }
 }

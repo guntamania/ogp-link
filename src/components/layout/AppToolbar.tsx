@@ -55,32 +55,33 @@ function AppToolbar() {
     <>
       <AppBar position="fixed" elevation={0}>
         <Toolbar sx={{ maxWidth: 1200, width: '100%', mx: 'auto', px: { xs: 2, sm: 3 } }}>
-          <IconButton
-            onClick={() => navigate('/')}
-            sx={{
-              width: 40, height: 40, p: 0,
-              borderRadius: '50%',
-              border: '1px solid rgba(255,255,255,0.08)',
-              overflow: 'hidden',
-            }}
-          >
-            <img src="/ogp-link.svg" alt="ogp-link" style={{ width: '100%', height: '100%', display: 'block' }} />
-          </IconButton>
-
-          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, cursor: 'pointer' }} onClick={() => navigate('/')}>
+            <Box
+              sx={{
+                width: 36, height: 36,
+                borderRadius: '10px',
+                border: '1.5px solid rgba(0,0,0,0.08)',
+                background: '#F1DFAA',
+                overflow: 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <img src="/ogp-link.svg" alt="ogp-link" style={{ width: '100%', height: '100%', display: 'block' }} />
+            </Box>
             <Typography
               sx={{
                 fontSize: 15,
-                fontWeight: 700,
-                background: 'linear-gradient(135deg,#646cff 0%,#a855f7 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '.04em',
+                fontWeight: 800,
+                color: '#1a1a1a',
+                letterSpacing: '-0.02em',
               }}
             >
               ogp-link
             </Typography>
           </Box>
+
+          <Box sx={{ flex: 1 }} />
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             {isRoomPage && (
@@ -94,10 +95,10 @@ function AppToolbar() {
               </IconButton>
             ) : (
               <Button
-                variant="outlined"
+                variant="contained"
                 size="small"
                 onClick={() => navigate('/')}
-                sx={{ borderRadius: 9999, px: 2, py: 0.75 }}
+                sx={{ borderRadius: 9999, px: 2.5, py: 0.75, fontWeight: 700 }}
               >
                 ログイン
               </Button>
@@ -108,15 +109,30 @@ function AppToolbar() {
 
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <Box sx={{ width: 280 }}>
-          <Box sx={{ p: 2.5, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 0.5 }}>
-              アカウント
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {session?.user.email}
-            </Typography>
+          <Box sx={{ p: 2.5, borderBottom: '1px solid rgba(0,0,0,0.07)', display: 'flex', alignItems: 'center', gap: 1.25 }}>
+            <Box
+              sx={{
+                width: 32, height: 32,
+                borderRadius: '8px',
+                background: '#F1DFAA',
+                border: '1px solid rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <img src="/ogp-link.svg" alt="ogp-link" style={{ width: '100%', height: '100%', display: 'block' }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={700} color="text.primary">
+                アカウント
+              </Typography>
+              <Typography variant="caption" color="text.disabled">
+                {session?.user.email}
+              </Typography>
+            </Box>
           </Box>
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+          <Divider sx={{ borderColor: 'rgba(0,0,0,0.06)' }} />
           <List sx={{ py: 1 }}>
             <ListItem disablePadding>
               <ListItemButton onClick={() => { setDrawerOpen(false); navigate('/new') }}>
@@ -126,7 +142,7 @@ function AppToolbar() {
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton onClick={() => { setDrawerOpen(false); navigate('/mypage') }}>
-                <ListItemIcon sx={{ minWidth: 40 }}><DashboardIcon sx={{ fontSize: 20, color: 'primary.main' }} /></ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40 }}><DashboardIcon sx={{ fontSize: 20, color: 'secondary.main' }} /></ListItemIcon>
                 <ListItemText primary="マイページ" />
               </ListItemButton>
             </ListItem>

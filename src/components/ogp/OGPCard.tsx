@@ -58,12 +58,7 @@ function OGPCard({ url, id, note, onDelete }: OGPCardProps) {
         variant="rectangular"
         height={CARD_HEIGHT}
         animation="wave"
-        sx={{
-          borderRadius: '20px',
-          background: 'linear-gradient(90deg,#1e1e30 25%,#252540 50%,#1e1e30 75%)',
-          backgroundSize: '200% 100%',
-          animation: 'shimmer 1.5s infinite',
-        }}
+        sx={{ borderRadius: '20px' }}
       />
     )
   }
@@ -81,8 +76,8 @@ function OGPCard({ url, id, note, onDelete }: OGPCardProps) {
         position: 'relative',
         cursor: 'pointer',
         boxShadow: hovered
-          ? '0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(124,131,255,0.18)'
-          : '0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)',
+          ? '0 8px 28px rgba(0,0,0,0.18)'
+          : '0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06)',
         transition: 'box-shadow 0.3s ease, transform 0.2s ease',
         transform: hovered ? 'translateY(-2px)' : 'none',
       }}
@@ -93,7 +88,7 @@ function OGPCard({ url, id, note, onDelete }: OGPCardProps) {
           position: 'absolute',
           inset: 0,
           backgroundImage: ogpData.image ? `url(${ogpData.image})` : 'none',
-          background: ogpData.image ? undefined : 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
+          background: ogpData.image ? undefined : 'linear-gradient(145deg,#F1DFAA 0%,#faf7f0 100%)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

@@ -93,8 +93,8 @@ function MyPage() {
           {rooms.length === 0 ? (
             <Box sx={{
               py: 10, textAlign: 'center', borderRadius: '20px',
-              background: 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#ffffff',
+              border: '1px solid rgba(0,0,0,0.08)',
             }}>
               <Typography variant="h6" color="text.secondary" gutterBottom>
                 まだルームがありません
@@ -119,11 +119,11 @@ function MyPage() {
                       p: 2.5, borderRadius: '20px',
                       background: 'linear-gradient(145deg,#22223a 0%,#1a1a2e 100%)',
                       border: '1px solid rgba(255,255,255,0.08)',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                      boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
                       transition: 'border-color 0.2s, box-shadow 0.2s',
                       '&:hover': {
-                        borderColor: 'rgba(124,131,255,0.28)',
-                        boxShadow: '0 6px 24px rgba(0,0,0,0.5), 0 0 12px rgba(124,131,255,0.10)',
+                        borderColor: 'rgba(0,0,0,0.14)',
+                        boxShadow: '0 8px 28px rgba(0,0,0,0.10)',
                       },
                     }}
                   >
