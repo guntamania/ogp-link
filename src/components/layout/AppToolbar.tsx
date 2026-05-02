@@ -58,15 +58,13 @@ function AppToolbar() {
           <IconButton
             onClick={() => navigate('/')}
             sx={{
-              width: 40, height: 40,
+              width: 40, height: 40, p: 0,
+              borderRadius: '50%',
               border: '1px solid rgba(255,255,255,0.08)',
-              background: 'rgba(255,255,255,0.06)',
+              overflow: 'hidden',
             }}
           >
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-              <path d="M14.5 2.5L3 24h5l8-16 8 16h5L18.5 2.5a2.3 2.3 0 00-4 0z" fill="#7c83ff"/>
-              <path d="M10 24l6-12 6 12" fill="none" stroke="#a855f7" strokeWidth="2"/>
-            </svg>
+            <img src="/ogp-link.svg" alt="ogp-link" style={{ width: '100%', height: '100%', display: 'block' }} />
           </IconButton>
 
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
